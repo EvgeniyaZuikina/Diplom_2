@@ -1,0 +1,9 @@
+IncorrectLoginTest.class
+CreateOrderTest.class
+CreateUserWithoutFieldTest.class
+CreateUserTest.class
+UserLoginTest.class
+NonAuthUserChangeInfoTest.class
+AuthUserChangeInfoTest.class
+GetUserOrderInfoTest.class
+ChangeEmailToAlreadyExistingUserTest.class

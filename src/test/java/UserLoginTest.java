@@ -1,6 +1,8 @@
+import client.UserClient;
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
+import model.User;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +30,6 @@ public class UserLoginTest {
     @Test
     @DisplayName("Checkout: existing user can login")
     @Description("Checkout: status code=200, user token is not empty")
-
     public void userSuccessLogin() {
         userClient.createUser(user);
         ValidatableResponse login = userClient.loginUser(new User(user.email, user.password, user.name));

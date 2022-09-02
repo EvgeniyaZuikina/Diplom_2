@@ -1,0 +1,5 @@
+client\IngredientsClient.class
+client\UserClient.class
+model\User.class
+client\OrderClient.class
+client\RestAssuredClient.class

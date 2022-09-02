@@ -1,6 +1,8 @@
+import client.UserClient;
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
+import model.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -28,9 +30,7 @@ public class CreateUserWithoutFieldTest {
     @DisplayName("Validation check on user registration")
     @Description("1. Registration without field name"
             + "\n"+ "2. Registration without field email"
-            + "\n"+ "3. Registration without field password"
-    )
-
+            + "\n"+ "3. Registration without field password")
     public void userWithoutFieldIsNotCreateTest() {
 
         final String expectedMessage = "Email, password and name are required fields";

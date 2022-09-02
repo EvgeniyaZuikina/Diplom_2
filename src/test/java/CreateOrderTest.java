@@ -1,11 +1,17 @@
+import client.IngredientsClient;
+import client.OrderClient;
+import client.UserClient;
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
+import model.User;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import static org.apache.http.HttpStatus.*;
 import static org.junit.Assert.*;
 
@@ -23,6 +29,7 @@ public class CreateOrderTest {
         ordersClient = new OrderClient();
         ingredientsClient = new IngredientsClient();
     }
+
     @After
     public void tearDown() {
         userClient.delete(accessToken);
@@ -31,14 +38,14 @@ public class CreateOrderTest {
     @Test
     @DisplayName("Create order by authorized user")
     @Description("Checkout: status code=200")
-    public void authUserCanCreateOrderTest (){
+    public void authUserCanCreateOrderTest() {
         userClient.createUser(user);
         ValidatableResponse login = userClient.loginUser(new User(user.email, user.password, user.name));
         accessToken = login.extract().path("accessToken");
         ValidatableResponse allIngredients = ingredientsClient.getIngredients();
         List<String> ingredientsForBurger = new ArrayList<>();
         for (int i = 0; i <= 3; i++) {
-            ingredientsForBurger.add(allIngredients.extract().path("data["+ i + "]._id"));
+            ingredientsForBurger.add(allIngredients.extract().path("data[" + i + "]._id"));
         }
 
         ValidatableResponse response = ordersClient.createOrder(accessToken, ingredientsForBurger);
@@ -47,8 +54,8 @@ public class CreateOrderTest {
         boolean isOrderCreated = response.extract().path("success");
         int orderNum = response.extract().path("order.number");
 
-        assertEquals("Status code should be 200",  SC_OK, actualStatusCode);
-        assertTrue ("Order should be created", isOrderCreated);
+        assertEquals("Status code should be 200", SC_OK, actualStatusCode);
+        assertTrue("Order should be created", isOrderCreated);
         assertNotNull("Order number should be not null", orderNum);
 
     }
@@ -56,26 +63,26 @@ public class CreateOrderTest {
     @Test
     @DisplayName("Non-authorized user can create order")
     @Description("Checkout: status code=200")
-    public void nonAuthUserCanNotCreateOrderTest (){
+    public void nonAuthUserCanNotCreateOrderTest() {
 
         ValidatableResponse allIngredients = ingredientsClient.getIngredients();
         List<String> ingredientsForBurger = new ArrayList<>();
         for (int i = 0; i <= 3; i++) {
-            ingredientsForBurger.add(allIngredients.extract().path("data["+ i + "]._id"));
+            ingredientsForBurger.add(allIngredients.extract().path("data[" + i + "]._id"));
         }
 
         ValidatableResponse response = ordersClient.createOrderNonAuthUser(ingredientsForBurger);
         int actualStatusCode = response.extract().statusCode();
         boolean isOrderCreated = response.extract().path("success");
 
-        assertEquals("Status code should be 200",  SC_OK, actualStatusCode);
-        assertTrue ("Order should be created", isOrderCreated);
+        assertEquals("Status code should be 200", SC_OK, actualStatusCode);
+        assertTrue("Order should be created", isOrderCreated);
     }
 
     @Test
     @DisplayName("Authorized user can't create order without ingredients")
     @Description("Checkout: status code=400")
-    public void authUserCanNotCreateOrderWithoutIngredientsTest (){
+    public void authUserCanNotCreateOrderWithoutIngredientsTest() {
         userClient.createUser(user);
         ValidatableResponse login = userClient.loginUser(new User(user.email, user.password, user.name));
         accessToken = login.extract().path("accessToken");
@@ -84,25 +91,25 @@ public class CreateOrderTest {
         int actualStatusCode = response.extract().statusCode();
         boolean isOrderCreated = response.extract().path("success");
 
-        assertEquals("Status code should be 400",  SC_BAD_REQUEST, actualStatusCode);
-        assertFalse ("Order shouldn't be created", isOrderCreated);
+        assertEquals("Status code should be 400", SC_BAD_REQUEST, actualStatusCode);
+        assertFalse("Order shouldn't be created", isOrderCreated);
     }
 
     @Test
     @DisplayName("Authorized user can not create order with incorrect ingredients hash")
     @Description("Checkout: status code=500")
-    public void userCanNotCreateOrderWithIncorrectHashTest (){
+    public void userCanNotCreateOrderWithIncorrectHashTest() {
         userClient.createUser(user);
         ValidatableResponse login = userClient.loginUser(new User(user.email, user.password, user.name));
         accessToken = login.extract().path("accessToken");
         ValidatableResponse allIngredients = ingredientsClient.getIngredients();
         List<String> ingredientsForBurger = new ArrayList<>();
         for (int i = 0; i <= 3; i++) {
-            ingredientsForBurger.add(allIngredients.extract().path("data["+ i + "]._id")+"111");
+            ingredientsForBurger.add(allIngredients.extract().path("data[" + i + "]._id") + "111");
         }
 
         ValidatableResponse response = ordersClient.createOrder(accessToken, ingredientsForBurger);
         int actualStatusCode = response.extract().statusCode();
-        assertEquals("Status code should be 500",  SC_INTERNAL_SERVER_ERROR, actualStatusCode);
+        assertEquals("Status code should be 500", SC_INTERNAL_SERVER_ERROR, actualStatusCode);
     }
 }
